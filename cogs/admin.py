@@ -19,6 +19,12 @@ class administrator(commands.Cog):
         await self.client.change_presence(activity=discord.Game('Counting Fiddles...'))
         print('Has been logged in as {0.user}'.format(self.client))
 
+    # testing purpose
+    # @commands.command()
+    # @commands.has_permissions(administrator=True)
+    # async def test(self, ctx):
+
+
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def prune(self, ctx, amount=7):
@@ -91,7 +97,10 @@ class administrator(commands.Cog):
         )
         # embed.set_footer(text=f"Giveaway started at {time}\n CST") # , value=f"{end} from now!")      giveaway kończy sie za X czasu
 
-        await channel.send(file=discord.File('./imgs/giveaway.png'))
+        file = discord.File("./imgs/Giveaway.png", filename="Giveaway.png")
+        e = discord.Embed()
+        e.set_image(url='attachment://Giveaway.png')
+        await channel.send(file=file, embed=e)
         my_msg = await channel.send(embed=embed)
         giveaway_messageId = giveway_idFunction(my_msg.id)
 
