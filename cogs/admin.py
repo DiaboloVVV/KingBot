@@ -1,10 +1,15 @@
 import discord
+from discord.ext import commands
+from discord.utils import get
 import datetime
+from datetime import date, datetime, timedelta
+import time
+import sched
+import calendar
 from dateutil import tz
 import asyncio
 import random
-from discord.ext import commands
-from discord.utils import get
+
 from dotenv import load_dotenv
 from normalFunctions import *
 import os
@@ -17,7 +22,7 @@ class administrator(commands.Cog):
         self.color = 0x1D474C
 
     @commands.Cog.listener()
-    async def on_ready(self):
+    async def on_ready(self, ):
         await self.client.change_presence(activity=discord.Game('with ravens..'))
         print('Has been logged in as {0.user}'.format(self.client))
 
@@ -138,16 +143,44 @@ class administrator(commands.Cog):
         # e = discord.Embed(title="Giveaway&Twitch Notification", description="")
 
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def mess(self, ctx):
-        e = discord.Embed(title="Stream SURVEY", description="1) Steam will take place as planned. »» ✅\n"
-        "2) Steam will be delayed. »» ❓\n"
-        "3) Steam will not take place. »» ❌", color=self.color)
-        msg = await ctx.channel.send(embed=e)
+    # @commands.has_permissions(administrator=True)
+    async def mess(self, ctx): # , member: discord.Member = None):
+        member = await self.client.fetch_user(306076515001696280)
 
-        await msg.add_reaction('✅')
-        await msg.add_reaction('❓')
-        await msg.add_reaction('❌')
+        alarm_time = '18:45'
+        channel_id = '832284509155098727'
+
+        now = datetime.datetime.strftime(datetime.datetime.now(), '%H:%M')
+        todays_date = date.today()
+        week = calendar.day_name[todays_date.weekday()]
+        chan = self.client.get_channel(channel_id)
+        if week != 'Sunday' and week != 'Saturday':
+            if now == alarm_time:
+                if member is not None:
+                    channel = member.dm_channel
+                    if channel is None:
+                        channel = await member.create_dm()
+                    e = discord.Embed(title="Stream SURVEY", description="1) Steam will take place as planned. »» ✅\n"
+                                                                         "2) Steam will be delayed. »» ❓\n"
+                                                                         "3) Steam will not take place. »» ❌",
+                                      color=self.color)
+                    msg = await channel.send(embed=e)
+                    await msg.add_reaction('✅')
+                    await msg.add_reaction('❓')
+                    await msg.add_reaction('❌')
+                    # checking reactions etc.
+                else:
+                    await ctx.send("Doesn't work")
+                # waiting for another day
+                time = (3600*24)
+            else:
+                time = 15
+            await asyncio.sleep(time)
+            print('It\'s not a weekday')
+        else:
+            await asyncio.sleep((3600*24))
+        self.client.loop.create_task(self.mess(ctx))
+
 
 
     @commands.command()
